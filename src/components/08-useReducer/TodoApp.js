@@ -1,34 +1,62 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useReducer } from 'react'
 import { todoReducer } from './todoReducer'
+import { TodoList } from './TodoList'
+import { TodoAdd } from './TodoAdd'
+
 import './TodoApp.css'
 
-const initialState = [{
-    id: new Date().getTime(),
-    description: 'Aprender React',
-    done: false
-}]
+const init = () => {
+    return JSON.parse(localStorage.getItem('todos')) || []
+
+}
 
 export const TodoApp = () => {
 
-    const [todos] = useReducer(todoReducer, initialState)
+    const [todos, dispatch] = useReducer(todoReducer, [], init)
 
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(todos))
+    }, [todos])
+
+    const handleDelete = (id) => {
+
+        const action = {
+            type: 'delete',
+            payload: id
+        }
+        dispatch(action)
+    }
+
+    const handleToggle = (id) => {
+        dispatch({
+            type: 'done',
+            payload: id
+        })
+
+    }
+
+    const handleAddTodo = (newTodo) => {
+        dispatch({
+            type: 'add',
+            payload: newTodo
+        })
+    }
 
     return (
         <div>
             <h1>TODO App ({todos.length})</h1>
             <hr />
-            <ul className='list-group list-group-flush'>
-                {todos.map(elm => (
-                    <>
-                        <li key={elm.id} className='list-group-item'>
-                            <p className='text-center'>{elm.description}</p>
-                        </li>
-                        <button className='btn btn-outline-danger'>Delete</button>
-                    </>
-                )
-                )}
-            </ul>
+            <div className='row'>
+                <div className='col-6'>
+                    <TodoList todos={todos} handleDelete={handleDelete} handleToggle={handleToggle} />
+                </div>
+                <div className='col-6 text-center'>
+                    <TodoAdd handleAddTodo={handleAddTodo} />
+                </div>
+
+
+            </div>
         </div>
     )
 }
