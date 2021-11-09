@@ -12,6 +12,7 @@ export const MultipleCustomHooks = () => {
     const { author, quote } = !!data && data[0]
 
 
+
     return (
         <>
             <h1>Breaking Bad Quotes</h1>
